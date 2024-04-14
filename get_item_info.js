@@ -1,3 +1,6 @@
+// TODO: Dont fetch descriptions for catalog listings! They will be empty. That's half a second wasted per catalog listing... 
+// TODO: make sure you're getting the information in the correct order 
+// TODO: Check against previous version of the backup what information has changed ? using the last_updated property
 const fs = require('fs')
 const { token } = require('./auth_token')
 const updatedItemList = require('./get_all_item_ids')
@@ -105,8 +108,11 @@ fetchItemsWithInfo(updatedItemList)
     return fetchItemDescriptions()
   })
   .then(() => {
+    const dateString = new Date().toISOString().replaceAll(":", "").slice(0, -5)
+    const filePath = './BACKUP/' + dateString + '_items_complete_info.json'
     console.log("itemsWithInfo.length: ", Object.keys(itemsWithInfo).length)
-    fs.writeFileSync('./BACKUP/items_with_info_and_descriptions.json', JSON.stringify(itemsWithInfo))
+
+    fs.writeFileSync(filePath, JSON.stringify(itemsWithInfo))
 
     return Promise.resolve();
   })
